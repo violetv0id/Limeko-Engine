@@ -9,7 +9,8 @@ uniform float uAmbient = 0.0; // 0 = no ambient, 1 = fully lit
 
 void main()
 {
-    float diff = max(dot(normalize(vNormal), normalize(-uLightDir)), 0.0);
+    // from lambert to half lambert
+    float diff = pow(0.5 * dot(normalize(vNormal), normalize(-uLightDir)) + 0.5, 2.0);
 
     // combine diffuse with ambient
     vec3 color = uRandomColor * (diff + uAmbient);
