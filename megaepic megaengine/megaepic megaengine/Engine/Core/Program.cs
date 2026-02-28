@@ -4,6 +4,7 @@ using BepuPhysics.Constraints;
 using BepuPhysics.Trees;
 using BepuUtilities;
 using BepuUtilities.Memory;
+using Limeko.Editor;
 using Limeko.Entities;
 using Limeko.Graphics;
 using OpenTK.Graphics.OpenGL4;
@@ -101,12 +102,12 @@ namespace Limeko
                 base.OnLoad();
                 Console.WriteLine("Starting...");
 
-                // init
+                // INIT
 
                 this.VSync = vsync ? VSyncMode.On : VSyncMode.Off;
 
 
-                //  visual stuff first
+                //  MISC VISUAL
 
                 var iconImage = Utils.Images.GetImageByPath(Path.Combine(Utils.Paths.EngineData, "Icon/icon.png"));
                 this.Icon = new WindowIcon(new OpenTK.Windowing.Common.Input.Image(iconImage.Width, iconImage.Height, iconImage.Data));
@@ -114,11 +115,9 @@ namespace Limeko
                 WindowSize = new Vector2(Size.X, Size.Y);
 
 
-                //  ui things
+                //  USER INTERFACE
 
                 // UserInterface.Common.LoadFont(Path.Combine(Utils.Paths.EngineData, "Fonts/common.ttf"));
-
-
                 float[] quad = Graphics.Primitives.Quad();
 
                 _uiVao = GL.GenVertexArray();
@@ -148,7 +147,7 @@ namespace Limeko
                 // initialize physics
 
                 Console.WriteLine("Initializing Bepu...");
-                Physics.Initialize();
+                EditorPlayer.TogglePlaymode();
                 Console.WriteLine("Bepu initialized!");
 
 
@@ -224,17 +223,11 @@ namespace Limeko
                 front = Vector3.Normalize(front);
 
 
-                if(_showDebug)
-                {
-                    
-                }
-
-
                 var input = KeyboardState;
                 var mouse = MouseState;
 
                 float delta = (float)e.Time;
-                Physics.Step(delta);
+                if(Physics.isRunning) Physics.Step(delta);
 
                 bool rightClick = mouse.IsButtonDown(MouseButton.Button2);
 
@@ -290,6 +283,8 @@ namespace Limeko
 
                 if (input.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F1)) _showDebug = !_showDebug;
                 if (input.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F2)) ReloadShaders();
+
+                if (input.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F5)) Editor.EditorPlayer.TogglePlaymode();
 
                 if (input.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F9)) Utils.Misc.OpenWebpage("https://github.com/violetv0id/Limeko-Engine/blob/86032362746b41fc365ed2ea4f40fabdf4dea6e5/LICENSE");
             }
@@ -476,167 +471,6 @@ namespace Limeko
         public static void QueueUI(Image<Rgba32> toRender, Vector2 position)
         {
             uiToRender.Add((toRender, position));
-        }
-    }
-
-    public static class Physics
-    {
-        public static Simulation Simulation;
-        static BufferPool _bufferPool;
-        public static List<Entity> RegisteredBodies = new();
-
-        public static bool initialized { get; private set; }
-
-        static float accumulator;
-        const float FixedTimestep = 1f / 60f;
-
-
-        public static void Initialize()
-        {
-            initialized = false;
-            _bufferPool = new BufferPool();
-
-            Console.WriteLine($"[BEPU]: Fixed Timestep is {FixedTimestep}");
-
-            var solveDescription = new SolveDescription(
-                velocityIterationCount: 8,
-                substepCount: 1);
-            Console.WriteLine($"[BEPU]: Solver IC: {solveDescription.VelocityIterationCount}");
-            Console.WriteLine($"[BEPU]: Solver Substep: {solveDescription.SubstepCount}");
-
-            Simulation = Simulation.Create(
-                _bufferPool,
-                new NarrowPhaseCallbacks(),
-                new PoseIntegratorCallbacks(new System.Numerics.Vector3(0, -9.81f, 0)),
-                solveDescription);
-            initialized = true;
-        }
-
-        public static void RegisterBody(Entity entity)
-        {
-            RegisteredBodies.Add(entity);
-
-            var pose = new RigidPose
-            {
-                Position = (System.Numerics.Vector3)entity.Transform.Position,
-                Orientation = (System.Numerics.Quaternion)entity.Transform.Rotation
-            };
-
-            if (entity.PhysicsShape is Box box)
-            {
-                entity.ShapeIndex = Simulation.Shapes.Add(box);
-
-                if (entity.Rigidbody.isStatic)
-                {
-                    entity.StaticHandle =
-                        Simulation.Statics.Add(new StaticDescription(pose, entity.ShapeIndex));
-                }
-                else
-                {
-                    var inertia = box.ComputeInertia(entity.Rigidbody.mass);
-
-                    entity.Rigidbody.Description = BodyDescription.CreateDynamic(pose, inertia, new CollidableDescription(entity.ShapeIndex, 0.1f), new BodyActivityDescription(0.01f));
-                    entity.DynamicHandle =
-                        Simulation.Bodies.Add(entity.Rigidbody.Description);
-                }
-            }
-            else if (entity.PhysicsShape is Sphere sphere)
-            {
-                entity.ShapeIndex = Simulation.Shapes.Add(sphere);
-
-                if (entity.Rigidbody.isStatic)
-                {
-                    entity.StaticHandle =
-                        Simulation.Statics.Add(new StaticDescription(pose, entity.ShapeIndex));
-                }
-                else
-                {
-                    var inertia = sphere.ComputeInertia(entity.Rigidbody.mass);
-
-                    entity.DynamicHandle =
-                        Simulation.Bodies.Add(
-                            BodyDescription.CreateDynamic(
-                                pose,
-                                inertia,
-                                new CollidableDescription(entity.ShapeIndex, 0.1f),
-                                new BodyActivityDescription(0.01f)));
-                }
-            }
-            else
-            {
-                throw new NotSupportedException(
-                    $"Unsupported shape type: {entity.PhysicsShape?.GetType().Name}");
-            }
-        }
-
-        public static void Step(float dt)
-        {
-            dt = MathF.Min(dt, 0.1f);
-            accumulator += dt;
-
-            while (accumulator >= FixedTimestep)
-            {
-                Simulation.Timestep(FixedTimestep);
-
-                foreach (var entity in RegisteredBodies)
-                {
-                    if (entity.Rigidbody.isStatic)
-                        continue;
-
-                    var body = Simulation.Bodies.GetBodyReference(entity.DynamicHandle);
-
-                    entity.Transform.Position =
-                        (Vector3)body.Pose.Position;
-
-                    entity.Transform.Rotation =
-                        (Quaternion)body.Pose.Orientation;
-                }
-
-                accumulator -= FixedTimestep;
-            }
-        }
-
-        public static bool PickEntity(System.Numerics.Vector3 origin, System.Numerics.Vector3 direction, float maxDistance, out Entity picked)
-        {
-            var handler = new PickHandler();
-            Physics.Simulation.RayCast(origin, direction, maxDistance, ref handler);
-
-            picked = handler.HitEntity;
-            return picked != null;
-        }
-
-        public class PickHandler : IRayHitHandler
-        {
-            public Entity HitEntity = null;
-            public float HitT = float.MaxValue;
-
-            public bool AllowTest(CollidableReference collidable) => true;
-            public bool AllowTest(CollidableReference collidable, int childIndex) => true;
-
-            public void OnRayHit(in RayData ray, ref float maximumT, float t, in System.Numerics.Vector3 normal, CollidableReference collidable, int childIndex)
-            {
-                if (t >= HitT) return; // already have closer hit
-
-                // check dynamic bodies first
-                if (collidable.Mobility == CollidableMobility.Dynamic)
-                {
-                    var bodyHandle = collidable.BodyHandle;
-                    HitEntity = Physics.RegisteredBodies
-                                   .FirstOrDefault(e => e.DynamicHandle == bodyHandle);
-                }
-                else if (collidable.Mobility == CollidableMobility.Static)
-                {
-                    var staticHandle = collidable.StaticHandle;
-                    HitEntity = Physics.RegisteredBodies
-                                   .FirstOrDefault(e => e.StaticHandle == staticHandle);
-                }
-
-                if (HitEntity != null)
-                {
-                    HitT = t;
-                    maximumT = t; // shorten the ray so farther hits are ignored
-                }
-            }
         }
     }
 
@@ -874,331 +708,6 @@ namespace Limeko.Entities
         public BodyDescription Description;
 
         public BodyInertia inertia;
-    }
-}
-
-namespace Limeko.Editor
-{
-
-}
-
-namespace Limeko.Rendering
-{
-    public class Material
-    {
-        public Shader _Shader;
-        // display shader parameters
-    }
-}
-
-namespace Limeko.Graphics
-{
-    public class RenderingCore
-    {
-        private static List<RenderObject> _objects = new();
-
-        public static void Register(RenderObject obj)
-        {
-            _objects.Add(obj);
-        }
-        public static void Unregister(RenderObject obj)
-        {
-            try { _objects.Remove(obj); }
-            catch (Exception ex) { Console.WriteLine($"Error while Unregistering {obj.AttachedEntity.Id}"); }
-        }
-        public static List<RenderObject> GetRegistered()
-        {
-            return _objects;
-        }
-
-        public static int CreateFrameBuffer()
-        {
-            int frameBuffer = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBuffer);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-            return frameBuffer;
-        }
-
-        public static void BindFrameBuffer(int frameBuffer, int width, int height)
-        {
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBuffer);
-            GL.Viewport(0, 0, width, height);
-        }
-
-
-        public static int CreateTextureAttachment(int width, int height)
-        {
-            int texture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height,
-                0, PixelFormat.Rgb, PixelType.UnsignedByte, IntPtr.Zero);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-
-            GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, texture, 0);
-            return texture;
-        }
-
-        public static int CreateDepthTextureAttachment(int width, int height)
-        {
-            int texture = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height,
-                0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-
-            GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, texture, 0);
-            return texture;
-        }
-
-        public static int CreateDepthBufferAttachment(int width, int height)
-        {
-            int depthBuffer = GL.GenRenderbuffer();
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthBuffer);
-            return depthBuffer;
-        }
-    }
-
-    static class Utils
-    {
-        static Dictionary<(int, string), int> _uniformCache = new();
-
-        public static int GetUniformLocation(string name, int program)
-        {
-            var key = (program, name);
-            if (_uniformCache.TryGetValue(key, out int loc)) return loc;
-
-            loc = GL.GetUniformLocation(program, name);
-            _uniformCache[key] = loc;
-            return loc;
-        }
-
-        public static void ClearUniformCache()
-        {
-            _uniformCache.Clear();
-        }
-
-        public static void CreateObject(Entity entity, Mesh mesh)
-        {
-            Graphics.RenderingCore.Register(new RenderObject
-            {
-                Mesh = mesh,
-                AttachedEntity = entity,
-                Color = new Vector3(0.8f, 0.8f, 0.8f) // light gray floor
-            });
-        }
-
-        public static void CreateObject(Entity entity, Mesh mesh, Transform offset)
-        {
-            Graphics.RenderingCore.Register(new RenderObject
-            {
-                Mesh = mesh,
-                AttachedEntity = entity,
-                Offset = offset,
-                Color = new Vector3(0.8f, 0.8f, 0.8f) // default is light gray
-            });
-        }
-
-        public static void CreateObject(Entity entity, Mesh mesh, Vector3 color)
-        {
-            Graphics.RenderingCore.Register(new RenderObject
-            {
-                Mesh = mesh,
-                AttachedEntity = entity,
-                Color = color
-            });
-        }
-
-        public static void CreateObject(Entity entity, Mesh mesh, Transform offset, Vector3 color)
-        {
-            Graphics.RenderingCore.Register(new RenderObject
-            {
-                Mesh = mesh,
-                AttachedEntity = entity,
-                Offset = offset,
-                Color = color
-            });
-        }
-
-        public static void DrawDebugShapes(Matrix4 view, Matrix4 projection)
-        {
-            foreach (var entity in Physics.RegisteredBodies)
-            {
-                var model = Matrix4.CreateScale(entity.Transform.Scale) *
-                            Matrix4.CreateFromQuaternion(entity.Transform.Rotation) *
-                            Matrix4.CreateTranslation(entity.Transform.Position);
-
-                if (entity.PhysicsShape is Box box)
-                {
-                    Core.WindowInstance._debugShader.SetMatrix4("uModel", model);
-                    Core.WindowInstance._debugShader.SetMatrix4("uView", view);
-                    Core.WindowInstance._debugShader.SetMatrix4("uProjection", projection);
-                    Core.WindowInstance._debugShader.SetColor("uColor", new Vector3(0.3f, 0.3f, 1f));
-                    Graphics.Primitives.Cube();
-                }
-                // add capsules, convexes etc similarly
-            }
-        }
-    }
-
-    public static class Primitives
-    {
-        public static float[] Cube()
-        {
-            return new float[]
-            {
-                 // FRONT
-                -0.5f,-0.5f, 0.5f,  0,0,1,
-                 0.5f,-0.5f, 0.5f,  0,0,1,
-                 0.5f, 0.5f, 0.5f,  0,0,1,
-                 0.5f, 0.5f, 0.5f,  0,0,1,
-                -0.5f, 0.5f, 0.5f,  0,0,1,
-                -0.5f,-0.5f, 0.5f,  0,0,1,
-
-                 // BACK
-                -0.5f,-0.5f,-0.5f,  0,0,-1,
-                -0.5f, 0.5f,-0.5f,  0,0,-1,
-                 0.5f, 0.5f,-0.5f,  0,0,-1,
-                 0.5f, 0.5f,-0.5f,  0,0,-1,
-                 0.5f,-0.5f,-0.5f,  0,0,-1,
-                -0.5f,-0.5f,-0.5f,  0,0,-1,
-
-                 // LEFT
-                -0.5f, 0.5f, 0.5f, -1,0,0,
-                -0.5f, 0.5f,-0.5f, -1,0,0,
-                -0.5f,-0.5f,-0.5f, -1,0,0,
-                -0.5f,-0.5f,-0.5f, -1,0,0,
-                -0.5f,-0.5f, 0.5f, -1,0,0,
-                -0.5f, 0.5f, 0.5f, -1,0,0,
-
-                 // RIGHT
-                 0.5f, 0.5f, 0.5f,  1,0,0,
-                 0.5f,-0.5f,-0.5f,  1,0,0,
-                 0.5f, 0.5f,-0.5f,  1,0,0,
-                 0.5f,-0.5f,-0.5f,  1,0,0,
-                 0.5f, 0.5f, 0.5f,  1,0,0,
-                 0.5f,-0.5f, 0.5f,  1,0,0,
-
-                 // TOP
-                -0.5f, 0.5f,-0.5f,  0,1,0,
-                -0.5f, 0.5f, 0.5f,  0,1,0,
-                 0.5f, 0.5f, 0.5f,  0,1,0,
-                 0.5f, 0.5f, 0.5f,  0,1,0,
-                 0.5f, 0.5f,-0.5f,  0,1,0,
-                -0.5f, 0.5f,-0.5f,  0,1,0,
-
-                 // BOTTOM
-                -0.5f,-0.5f,-0.5f,  0,-1,0,
-                 0.5f,-0.5f, 0.5f,  0,-1,0,
-                -0.5f,-0.5f, 0.5f,  0,-1,0,
-                 0.5f,-0.5f, 0.5f,  0,-1,0,
-                -0.5f,-0.5f,-0.5f,  0,-1,0,
-                 0.5f,-0.5f,-0.5f,  0,-1,0,
-            };
-        }
-
-        public static float[] Quad()
-        {
-            return new float[]
-            {
-                 // pos         uv
-                -1f, -1f,     0f, 0f,
-                 1f, -1f,     1f, 0f,
-                 1f,  1f,     1f, 1f,
-
-                 1f,  1f,     1f, 1f,
-                -1f,  1f,     0f, 1f,
-                -1f, -1f,     0f, 0f,
-            };
-        }
-
-        public static float[] ScreenSpaceQuad(Vector2 position, Vector2 elementSize)
-        {
-            float x = position.X;
-            float y = position.Y;
-
-            float w = elementSize.X;
-            float h = elementSize.Y;
-
-            var tl = Core.PixelToNDC(x, y);
-            var tr = Core.PixelToNDC(x + w, y);
-            var br = Core.PixelToNDC(x + w, y + h);
-            var bl = Core.PixelToNDC(x, y + h);
-
-            return new float[]
-            {
-                tl.X, tl.Y, 0f, 0f,
-                tr.X, tr.Y, 1f, 0f,
-                br.X, br.Y, 1f, 1f,
-
-                br.X, br.Y, 1f, 1f,
-                bl.X, bl.Y, 0f, 1f,
-                tl.X, tl.Y, 0f, 0f,
-            };
-        }
-    }
-
-    public class Mesh
-    {
-        int _vao;
-        int _vbo;
-        int _vertexCount;
-
-        public Mesh(float[] vertices)
-        {
-            _vertexCount = vertices.Length / 6;
-
-            _vao = GL.GenVertexArray();
-            _vbo = GL.GenBuffer();
-
-            GL.BindVertexArray(_vao);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer,
-                          vertices.Length * sizeof(float),
-                          vertices,
-                          BufferUsageHint.StaticDraw);
-
-            //  position
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float,
-                                   false, 6 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            //   normal
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float,
-                                   false, 6 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
-        }
-
-        public void Draw(PrimitiveType type = PrimitiveType.Triangles)
-        {
-            GL.BindVertexArray(_vao);
-            GL.DrawArrays(type, 0, _vertexCount);
-        }
-    }
-
-    public class RenderObject
-    {
-        public Mesh Mesh;
-        public Entities.Entity AttachedEntity;
-        public Transform Offset = new();
-        public Vector3 Color = new Vector3(0.8f, 0.8f, 0.8f);
-
-        public Matrix4 GetModelMatrix()
-        {
-            return
-                Matrix4.CreateScale(AttachedEntity.Transform.Scale + (Offset.Scale - Vector3.One)) *
-                Matrix4.CreateFromQuaternion(AttachedEntity.Transform.Rotation + Offset.Rotation) *
-                Matrix4.CreateTranslation(AttachedEntity.Transform.Position + Offset.Position);
-        }
     }
 }
 
