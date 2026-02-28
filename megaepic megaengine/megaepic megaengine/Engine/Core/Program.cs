@@ -1,5 +1,6 @@
 ﻿using BepuPhysics;
 using BepuPhysics.Collidables;
+using BepuPhysics.Constraints;
 using BepuPhysics.Trees;
 using BepuUtilities;
 using BepuUtilities.Memory;
@@ -17,6 +18,7 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using StbImageSharp;
+using System.Diagnostics;
 using System.Drawing;
 using Font = SixLabors.Fonts.Font;
 
@@ -46,7 +48,7 @@ namespace Limeko
             public static Vector2 WindowSize;
 
 
-            Vector3 _cameraPosition = new Vector3(0, 0, 2);
+            Vector3 _cameraPosition = new Vector3(0, 0.5f, 3);
             float _yaw = -90f;
             float _pitch = 0f;
 
@@ -85,7 +87,7 @@ namespace Limeko
             {
                 MinimumClientSize = new Vector2i(320, 180),
                 ClientSize = new Vector2i(1280, 720),
-                WindowState = WindowState.Maximized,
+                WindowState = WindowState.Normal,
                 Vsync = VSyncMode.On,
                 Title = "Limeko"
             };
@@ -97,7 +99,6 @@ namespace Limeko
             protected override void OnLoad()
             {
                 base.OnLoad();
-                Utils.Misc.PrintLimeko(true);
                 Console.WriteLine("Starting...");
 
                 // init
@@ -195,6 +196,15 @@ namespace Limeko
                 GL.ClearColor(0.63f, 1f, 0.3f, 1f);
 
                 Console.WriteLine("OpenGL running.");
+
+
+
+
+                Console.Clear();
+                Utils.Misc.PrintLimeko(true);
+                Utils.Misc.PrintLicenseDisclaimer();
+
+                Console.WriteLine("\n\nPress F1 to enter dev mode.  |  Press F2 to reload assets");
             }
 
             protected override void OnUnload()
@@ -212,6 +222,13 @@ namespace Limeko
                           MathF.Cos(OpenTK.Mathematics.MathHelper.DegreesToRadians(_pitch));
 
                 front = Vector3.Normalize(front);
+
+
+                if(_showDebug)
+                {
+                    
+                }
+
 
                 var input = KeyboardState;
                 var mouse = MouseState;
@@ -273,6 +290,8 @@ namespace Limeko
 
                 if (input.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F1)) _showDebug = !_showDebug;
                 if (input.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F2)) ReloadShaders();
+
+                if (input.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F9)) Utils.Misc.OpenWebpage("https://github.com/violetv0id/Limeko-Engine/blob/86032362746b41fc365ed2ea4f40fabdf4dea6e5/LICENSE");
             }
 
             protected override void OnResize(ResizeEventArgs e)
@@ -339,7 +358,7 @@ namespace Limeko
                 {
                     _shader.SetColor("uRandomColor", obj.Color);
                     _shader.SetMatrix4("uModel", obj.GetModelMatrix());
-                    obj.Mesh.Draw();
+                    obj.Mesh.Draw(_showDebug ? PrimitiveType.Lines : PrimitiveType.Triangles);
                 }
 
 
@@ -422,13 +441,21 @@ namespace Limeko
                 _shader?.Dispose();
                 _uiShader?.Dispose();
 
-                _shader = new Shader(
+                try
+                {
+                    _shader = new Shader(
                     Path.Combine(Utils.Paths.EngineData, "Shaders/basic.vert"),
                     Path.Combine(Utils.Paths.EngineData, "Shaders/basic.frag"));
+                }
+                catch(Exception ex) { Console.WriteLine($"Shader Compilation error: {ex.Message}"); };
 
-                _uiShader = new Shader(
+                try
+                {
+                    _uiShader = new Shader(
                     Path.Combine(Utils.Paths.EngineData, "Shaders/ui.vert"),
                     Path.Combine(Utils.Paths.EngineData, "Shaders/ui.frag"));
+                }
+                catch (Exception ex) { Console.WriteLine($"Shader Compilation error: {ex.Message}"); };
 
                 // clear uniform cache
                 Graphics.Utils.ClearUniformCache();
@@ -456,7 +483,7 @@ namespace Limeko
     {
         public static Simulation Simulation;
         static BufferPool _bufferPool;
-        public static List<Entity> RegisteredEntities = new();
+        public static List<Entity> RegisteredBodies = new();
 
         public static bool initialized { get; private set; }
 
@@ -487,7 +514,7 @@ namespace Limeko
 
         public static void RegisterBody(Entity entity)
         {
-            RegisteredEntities.Add(entity);
+            RegisteredBodies.Add(entity);
 
             var pose = new RigidPose
             {
@@ -551,7 +578,7 @@ namespace Limeko
             {
                 Simulation.Timestep(FixedTimestep);
 
-                foreach (var entity in RegisteredEntities)
+                foreach (var entity in RegisteredBodies)
                 {
                     if (entity.Rigidbody.isStatic)
                         continue;
@@ -594,13 +621,13 @@ namespace Limeko
                 if (collidable.Mobility == CollidableMobility.Dynamic)
                 {
                     var bodyHandle = collidable.BodyHandle;
-                    HitEntity = Physics.RegisteredEntities
+                    HitEntity = Physics.RegisteredBodies
                                    .FirstOrDefault(e => e.DynamicHandle == bodyHandle);
                 }
                 else if (collidable.Mobility == CollidableMobility.Static)
                 {
                     var staticHandle = collidable.StaticHandle;
-                    HitEntity = Physics.RegisteredEntities
+                    HitEntity = Physics.RegisteredBodies
                                    .FirstOrDefault(e => e.StaticHandle == staticHandle);
                 }
 
@@ -692,6 +719,21 @@ namespace Limeko
                 Console.WriteLine("                                              '    \\  \\  \\             ");
                 Console.WriteLine("                                             '------'  '---'           ");
                 if(spacer) Console.WriteLine("");
+            }
+
+            public static void PrintLicenseDisclaimer()
+            {
+                Console.WriteLine("Limeko-Engine  Copyright (C) 2026  lunark");
+                Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY.");
+                Console.WriteLine("This is free software, and you are welcome to redistribute it");
+                Console.WriteLine("under certain conditions. Press F9 to learn more.");
+            }
+
+            public static void OpenWebpage(string url)
+            {
+                ProcessStartInfo info = new ProcessStartInfo
+                { FileName = url, UseShellExecute = true };
+                Process.Start(info);
             }
         }
 
@@ -786,8 +828,22 @@ namespace Limeko.Entities
         */
     }
 
+    public class EntityManagement
+    {
+        public static List<Entity> RegisteredEntities = new();
+
+        public static void Register(Entity entity)
+        {
+            entity.Id = RegisteredEntities.Count;
+            Physics.RegisterBody(entity);
+            RegisteredEntities.Add(entity);
+        }
+    }
+
     public class Entity
     {
+        public int Id = 0;
+
         public Transform Transform = new();
 
         public BodyHandle DynamicHandle;
@@ -800,7 +856,7 @@ namespace Limeko.Entities
         public void Awake()
         {
             if(PhysicsShape == null) PhysicsShape = new Box(1f, 1f, 1f);
-            Physics.RegisterBody(this);
+            EntityManagement.Register(this);
         }
     }
 
@@ -821,6 +877,20 @@ namespace Limeko.Entities
     }
 }
 
+namespace Limeko.Editor
+{
+
+}
+
+namespace Limeko.Rendering
+{
+    public class Material
+    {
+        public Shader _Shader;
+        // display shader parameters
+    }
+}
+
 namespace Limeko.Graphics
 {
     public class RenderingCore
@@ -831,10 +901,69 @@ namespace Limeko.Graphics
         {
             _objects.Add(obj);
         }
-
+        public static void Unregister(RenderObject obj)
+        {
+            try { _objects.Remove(obj); }
+            catch (Exception ex) { Console.WriteLine($"Error while Unregistering {obj.AttachedEntity.Id}"); }
+        }
         public static List<RenderObject> GetRegistered()
         {
             return _objects;
+        }
+
+        public static int CreateFrameBuffer()
+        {
+            int frameBuffer = GL.GenFramebuffer();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBuffer);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+            return frameBuffer;
+        }
+
+        public static void BindFrameBuffer(int frameBuffer, int width, int height)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBuffer);
+            GL.Viewport(0, 0, width, height);
+        }
+
+
+        public static int CreateTextureAttachment(int width, int height)
+        {
+            int texture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, width, height,
+                0, PixelFormat.Rgb, PixelType.UnsignedByte, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+
+            GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, texture, 0);
+            return texture;
+        }
+
+        public static int CreateDepthTextureAttachment(int width, int height)
+        {
+            int texture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, width, height,
+                0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+
+            GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, texture, 0);
+            return texture;
+        }
+
+        public static int CreateDepthBufferAttachment(int width, int height)
+        {
+            int depthBuffer = GL.GenRenderbuffer();
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthBuffer);
+            return depthBuffer;
         }
     }
 
@@ -873,9 +1002,7 @@ namespace Limeko.Graphics
             {
                 Mesh = mesh,
                 AttachedEntity = entity,
-                PositionOffset = offset.Position,
-                RotationOffset = offset.Rotation,
-                ScaleOffset = offset.Scale,
+                Offset = offset,
                 Color = new Vector3(0.8f, 0.8f, 0.8f) // default is light gray
             });
         }
@@ -896,16 +1023,14 @@ namespace Limeko.Graphics
             {
                 Mesh = mesh,
                 AttachedEntity = entity,
-                PositionOffset = offset.Position,
-                RotationOffset = offset.Rotation,
-                ScaleOffset = offset.Scale,
+                Offset = offset,
                 Color = color
             });
         }
 
         public static void DrawDebugShapes(Matrix4 view, Matrix4 projection)
         {
-            foreach (var entity in Physics.RegisteredEntities)
+            foreach (var entity in Physics.RegisteredBodies)
             {
                 var model = Matrix4.CreateScale(entity.Transform.Scale) *
                             Matrix4.CreateFromQuaternion(entity.Transform.Rotation) *
@@ -1053,10 +1178,10 @@ namespace Limeko.Graphics
             GL.EnableVertexAttribArray(1);
         }
 
-        public void Draw()
+        public void Draw(PrimitiveType type = PrimitiveType.Triangles)
         {
             GL.BindVertexArray(_vao);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, _vertexCount);
+            GL.DrawArrays(type, 0, _vertexCount);
         }
     }
 
@@ -1064,17 +1189,15 @@ namespace Limeko.Graphics
     {
         public Mesh Mesh;
         public Entities.Entity AttachedEntity;
-        public Vector3 PositionOffset = Vector3.Zero;
-        public Quaternion RotationOffset = Quaternion.Identity;
-        public Vector3 ScaleOffset = Vector3.One;
-        public Vector3 Color;
+        public Transform Offset = new();
+        public Vector3 Color = new Vector3(0.8f, 0.8f, 0.8f);
 
         public Matrix4 GetModelMatrix()
         {
             return
-                Matrix4.CreateScale(AttachedEntity.Transform.Scale + (ScaleOffset - Vector3.One)) *
-                Matrix4.CreateFromQuaternion(AttachedEntity.Transform.Rotation + RotationOffset) *
-                Matrix4.CreateTranslation(AttachedEntity.Transform.Position + PositionOffset);
+                Matrix4.CreateScale(AttachedEntity.Transform.Scale + (Offset.Scale - Vector3.One)) *
+                Matrix4.CreateFromQuaternion(AttachedEntity.Transform.Rotation + Offset.Rotation) *
+                Matrix4.CreateTranslation(AttachedEntity.Transform.Position + Offset.Position);
         }
     }
 }
