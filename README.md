@@ -1,5 +1,7 @@
 # Limeko Engine
-A flexible, open-source game engine made to combine all of the best features into one lightweight stack. Runs Natively on [OpenGL](https://www.opengl.org/), with planned support for [Vulkan](https://www.vulkan.org/).
+A flexible, Open-Source Game Engine made to combine all of the best features into one lightweight stack. Runs Natively on [OpenGL](https://www.opengl.org/), with planned support for [Vulkan](https://www.vulkan.org/).
+
+### Note: Limeko is very early in development, and is not a functional "Game Engine". Core framework is still being made and polished.
 
 # Render-Pipe Presets
 What are Render-Pipe Presets (RPPs)?
