@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36511.14 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "megaepic megaengine", "megaepic megaengine\megaepic megaengine.csproj", "{FDE7EB0B-5258-4128-BBD1-B98BF6E7F596}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDE7EB0B-5258-4128-BBD1-B98BF6E7F596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDE7EB0B-5258-4128-BBD1-B98BF6E7F596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDE7EB0B-5258-4128-BBD1-B98BF6E7F596}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDE7EB0B-5258-4128-BBD1-B98BF6E7F596}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20BF75BE-6ADE-480B-9D90-9A1203DFE5E8}
+	EndGlobalSection
+EndGlobal
