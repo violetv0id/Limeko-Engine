@@ -1,10 +1,11 @@
 using BepuPhysics.Collidables;
-using OpenTK.Mathematics;
 using Limeko;
-using OpenTK;
 using Limeko.Entities;
 using Limeko.Graphics;
+using Limeko.Rendering;
+using OpenTK;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
@@ -105,45 +106,23 @@ namespace Limeko.Graphics
             _uniformCache.Clear();
         }
 
-        public static void CreateObject(Entity entity, Mesh mesh)
+        public static void CreateObject(Entity entity, Mesh mesh, Material material)
         {
             Graphics.RenderingCore.Register(new RenderObject
             {
                 Mesh = mesh,
                 AttachedEntity = entity,
-                Color = new Vector3(0.8f, 0.8f, 0.8f) // light gray floor
+                Material = material
             });
         }
 
-        public static void CreateObject(Entity entity, Mesh mesh, Transform offset)
+        public static void CreateObject(Entity entity, Mesh mesh, Material material, Transform offset)
         {
             Graphics.RenderingCore.Register(new RenderObject
             {
                 Mesh = mesh,
                 AttachedEntity = entity,
-                Offset = offset,
-                Color = new Vector3(0.8f, 0.8f, 0.8f) // default is light gray
-            });
-        }
-
-        public static void CreateObject(Entity entity, Mesh mesh, Vector3 color)
-        {
-            Graphics.RenderingCore.Register(new RenderObject
-            {
-                Mesh = mesh,
-                AttachedEntity = entity,
-                Color = color
-            });
-        }
-
-        public static void CreateObject(Entity entity, Mesh mesh, Transform offset, Vector3 color)
-        {
-            Graphics.RenderingCore.Register(new RenderObject
-            {
-                Mesh = mesh,
-                AttachedEntity = entity,
-                Offset = offset,
-                Color = color
+                Material = material
             });
         }
 
@@ -174,53 +153,53 @@ namespace Limeko.Graphics
         {
             return new float[]
             {
-                 // FRONT
-                -0.5f,-0.5f, 0.5f,  0,0,1,
-                 0.5f,-0.5f, 0.5f,  0,0,1,
-                 0.5f, 0.5f, 0.5f,  0,0,1,
-                 0.5f, 0.5f, 0.5f,  0,0,1,
-                -0.5f, 0.5f, 0.5f,  0,0,1,
-                -0.5f,-0.5f, 0.5f,  0,0,1,
+                // ---------- FRONT (+Z)
+                -0.5f,-0.5f, 0.5f,  0,0,1,  0,0,
+                 0.5f,-0.5f, 0.5f,  0,0,1,  1,0,
+                 0.5f, 0.5f, 0.5f,  0,0,1,  1,1,
+                 0.5f, 0.5f, 0.5f,  0,0,1,  1,1,
+                -0.5f, 0.5f, 0.5f,  0,0,1,  0,1,
+                -0.5f,-0.5f, 0.5f,  0,0,1,  0,0,
 
-                 // BACK
-                -0.5f,-0.5f,-0.5f,  0,0,-1,
-                -0.5f, 0.5f,-0.5f,  0,0,-1,
-                 0.5f, 0.5f,-0.5f,  0,0,-1,
-                 0.5f, 0.5f,-0.5f,  0,0,-1,
-                 0.5f,-0.5f,-0.5f,  0,0,-1,
-                -0.5f,-0.5f,-0.5f,  0,0,-1,
+                // ---------- BACK (-Z)
+                -0.5f,-0.5f,-0.5f,  0,0,-1, 1,0,
+                -0.5f, 0.5f,-0.5f,  0,0,-1, 1,1,
+                 0.5f, 0.5f,-0.5f,  0,0,-1, 0,1,
+                 0.5f, 0.5f,-0.5f,  0,0,-1, 0,1,
+                0.5f,-0.5f,-0.5f,  0,0,-1, 0,0,
+                -0.5f,-0.5f,-0.5f,  0,0,-1, 1,0,
 
-                 // LEFT
-                -0.5f, 0.5f, 0.5f, -1,0,0,
-                -0.5f, 0.5f,-0.5f, -1,0,0,
-                -0.5f,-0.5f,-0.5f, -1,0,0,
-                -0.5f,-0.5f,-0.5f, -1,0,0,
-                -0.5f,-0.5f, 0.5f, -1,0,0,
-                -0.5f, 0.5f, 0.5f, -1,0,0,
+                // ---------- LEFT (-X)
+                -0.5f, 0.5f, 0.5f, -1,0,0,  1,1,
+                -0.5f, 0.5f,-0.5f, -1,0,0,  0,1,
+                -0.5f,-0.5f,-0.5f, -1,0,0,  0,0,
+                -0.5f,-0.5f,-0.5f, -1,0,0,  0,0,
+                -0.5f,-0.5f, 0.5f, -1,0,0,  1,0,
+                -0.5f, 0.5f, 0.5f, -1,0,0,  1,1,
 
-                 // RIGHT
-                 0.5f, 0.5f, 0.5f,  1,0,0,
-                 0.5f,-0.5f,-0.5f,  1,0,0,
-                 0.5f, 0.5f,-0.5f,  1,0,0,
-                 0.5f,-0.5f,-0.5f,  1,0,0,
-                 0.5f, 0.5f, 0.5f,  1,0,0,
-                 0.5f,-0.5f, 0.5f,  1,0,0,
+                // ---------- RIGHT (+X)
+                 0.5f, 0.5f, 0.5f,  1,0,0,  0,1,
+                 0.5f,-0.5f,-0.5f,  1,0,0,  1,0,
+                 0.5f, 0.5f,-0.5f,  1,0,0,  1,1,
+                 0.5f,-0.5f,-0.5f,  1,0,0,  1,0,
+                 0.5f, 0.5f, 0.5f,  1,0,0,  0,1,
+                 0.5f,-0.5f, 0.5f,  1,0,0,  0,0,
 
-                 // TOP
-                -0.5f, 0.5f,-0.5f,  0,1,0,
-                -0.5f, 0.5f, 0.5f,  0,1,0,
-                 0.5f, 0.5f, 0.5f,  0,1,0,
-                 0.5f, 0.5f, 0.5f,  0,1,0,
-                 0.5f, 0.5f,-0.5f,  0,1,0,
-                -0.5f, 0.5f,-0.5f,  0,1,0,
+                // ---------- TOP (+Y)
+                -0.5f, 0.5f,-0.5f,  0,1,0,  0,1,
+                -0.5f, 0.5f, 0.5f,  0,1,0,  0,0,
+                 0.5f, 0.5f, 0.5f,  0,1,0,  1,0,
+                 0.5f, 0.5f, 0.5f,  0,1,0,  1,0,
+                 0.5f, 0.5f,-0.5f,  0,1,0,  1,1,
+                -0.5f, 0.5f,-0.5f,  0,1,0,  0,1,
 
-                 // BOTTOM
-                -0.5f,-0.5f,-0.5f,  0,-1,0,
-                 0.5f,-0.5f, 0.5f,  0,-1,0,
-                -0.5f,-0.5f, 0.5f,  0,-1,0,
-                 0.5f,-0.5f, 0.5f,  0,-1,0,
-                -0.5f,-0.5f,-0.5f,  0,-1,0,
-                 0.5f,-0.5f,-0.5f,  0,-1,0,
+                // ---------- BOTTOM (-Y)
+                -0.5f,-0.5f,-0.5f,  0,-1,0, 0,1,
+                 0.5f,-0.5f, 0.5f,  0,-1,0, 1,0,
+                -0.5f,-0.5f, 0.5f,  0,-1,0, 0,0,
+                 0.5f,-0.5f, 0.5f,  0,-1,0, 1,0,
+                -0.5f,-0.5f,-0.5f,  0,-1,0, 0,1,
+                 0.5f,-0.5f,-0.5f,  0,-1,0, 1,1,
             };
         }
 
@@ -228,14 +207,14 @@ namespace Limeko.Graphics
         {
             return new float[]
             {
-                 // pos         uv
-                -1f, -1f,     0f, 0f,
-                 1f, -1f,     1f, 0f,
-                 1f,  1f,     1f, 1f,
+                // position   normal    uv
+                -1f,-1f,0f,   0,0,1,   0,0,
+                 1f,-1f,0f,   0,0,1,   1,0,
+                 1f, 1f,0f,   0,0,1,   1,1,
 
-                 1f,  1f,     1f, 1f,
-                -1f,  1f,     0f, 1f,
-                -1f, -1f,     0f, 0f,
+                 1f, 1f,0f,   0,0,1,   1,1,
+                -1f, 1f,0f,   0,0,1,   0,1,
+                -1f,-1f,0f,   0,0,1,   0,0,
             };
         }
 
@@ -243,7 +222,6 @@ namespace Limeko.Graphics
         {
             float x = position.X;
             float y = position.Y;
-
             float w = elementSize.X;
             float h = elementSize.Y;
 
@@ -254,13 +232,13 @@ namespace Limeko.Graphics
 
             return new float[]
             {
-                tl.X, tl.Y, 0f, 0f,
-                tr.X, tr.Y, 1f, 0f,
-                br.X, br.Y, 1f, 1f,
+                tl.X, tl.Y, 0f,  0,0,1,  0,0,
+                tr.X, tr.Y, 0f,  0,0,1,  1,0,
+                br.X, br.Y, 0f,  0,0,1,  1,1,
 
-                br.X, br.Y, 1f, 1f,
-                bl.X, bl.Y, 0f, 1f,
-                tl.X, tl.Y, 0f, 0f,
+                br.X, br.Y, 0f,  0,0,1,  1,1,
+                bl.X, bl.Y, 0f,  0,0,1,  0,1,
+                tl.X, tl.Y, 0f,  0,0,1,  0,0,
             };
         }
     }
@@ -273,7 +251,7 @@ namespace Limeko.Graphics
 
         public Mesh(float[] vertices)
         {
-            _vertexCount = vertices.Length / 6;
+            _vertexCount = vertices.Length / 8;
 
             _vao = GL.GenVertexArray();
             _vbo = GL.GenBuffer();
@@ -282,19 +260,26 @@ namespace Limeko.Graphics
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
             GL.BufferData(BufferTarget.ArrayBuffer,
-                          vertices.Length * sizeof(float),
-                          vertices,
-                          BufferUsageHint.StaticDraw);
+                vertices.Length * sizeof(float),
+                vertices,
+                BufferUsageHint.StaticDraw);
 
-            //  position
+            int stride = 8 * sizeof(float);
+
+            // position
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float,
-                                   false, 6 * sizeof(float), 0);
+                false, stride, 0);
             GL.EnableVertexAttribArray(0);
 
-            //   normal
+            // normal
             GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float,
-                                   false, 6 * sizeof(float), 3 * sizeof(float));
+                false, stride, 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
+
+            // uv
+            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float,
+                false, stride, 6 * sizeof(float));
+            GL.EnableVertexAttribArray(2);
         }
 
         public void Draw(PrimitiveType type = PrimitiveType.Triangles)
@@ -309,14 +294,13 @@ namespace Limeko.Graphics
         public Mesh Mesh;
         public Entities.Entity AttachedEntity;
         public Transform Offset = new();
-        public Vector3 Color = new Vector3(0.8f, 0.8f, 0.8f);
+        public Material Material;
 
         public Matrix4 GetModelMatrix()
         {
             Vector3 rotatedOffset =
                 Vector3.Transform(Offset.Position,
                 AttachedEntity.Transform.Rotation);
-
 
             return
                 Matrix4.CreateScale(AttachedEntity.Transform.Scale * Offset.Scale) *
@@ -330,7 +314,41 @@ namespace Limeko.Rendering
 {
     public class Material
     {
-        public Shader _Shader;
-        // display shader parameters
+        public Shader Shader;
+
+        // textures
+        public int BaseTexture = 0;
+
+        // parameters
+        public Vector3 TintColor = Vector3.One;
+        public float Ambient = 0.1f;
+
+        public Material(Shader shader)
+        {
+            Shader = shader;
+
+            // default values
+            BaseTexture = 0;          // means "no texture"
+            TintColor = Vector3.One;  // no tint
+            Ambient = 0.15f;          // nicer default lighting
+        }
+
+        public void Bind()
+        {
+            Shader.Use();
+
+            // --- textures ---
+            if(BaseTexture != 0)
+            {
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2D, BaseTexture);
+                Shader.SetInt("uBaseMap", 0);
+            }
+
+            // --- uniforms ---
+            Shader.SetVector3("uTintColor", TintColor);
+            Shader.SetFloat("uAmbient", Ambient);
+        }
     }
 }
+

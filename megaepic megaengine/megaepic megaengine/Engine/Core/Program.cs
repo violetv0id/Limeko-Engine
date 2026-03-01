@@ -7,6 +7,7 @@ using BepuUtilities.Memory;
 using Limeko.Editor;
 using Limeko.Entities;
 using Limeko.Graphics;
+using Limeko.Rendering;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -37,6 +38,7 @@ namespace Limeko
         {
             static void Main()
             {
+                Console.Title = "Limeko Console";
                 WindowInstance = new Window();
                 WindowInstance.Run();
             }
@@ -63,7 +65,7 @@ namespace Limeko
             double _fpsTimer;
             int _frameCount;
             int _fps;
-            bool _showDebug = false;
+            public bool _showDebug = false;
 
 
             int _vao;
@@ -162,7 +164,9 @@ namespace Limeko
                 floor.Transform.Position = new Vector3(0, -2f, 0);
                 floor.Awake();
 
-                Graphics.Utils.CreateObject(floor, new Graphics.Mesh(Primitives.Cube()));
+                Material mat = new Material(_shader);
+                mat.TintColor = new Vector3(0.7f, 0.7f, 0.7f);
+                Graphics.Utils.CreateObject(floor, new Graphics.Mesh(Primitives.Cube()), mat);
 
 
                 // System.Random rng = new System.Random();
@@ -178,11 +182,15 @@ namespace Limeko
                     Transform offset = new Transform();
                     offset.Position.Y = -0.5f;
 
+                    Material newMaterial = new Material(_shader);
+
                     Entity entity = new Entity();
                     entity.Rigidbody.mass = 5f;
                     entity.Rigidbody.isStatic = false;
                     entity.Transform.Position = new Vector3(move * objectDistance, 0f, 0f);
-                    Graphics.Utils.CreateObject(entity, new Graphics.Mesh(Utils.MeshLoader.Load_OBJ(meshPath)), offset, objectColor);
+
+                    Graphics.Utils.CreateObject(entity, new Graphics.Mesh(Utils.MeshLoader.Load_OBJ(meshPath)), newMaterial, offset);
+                    
                     entity.Awake();
                     move++;
                 }
@@ -272,10 +280,14 @@ namespace Limeko
                     Entity pew = new Entity();
                     pew.Transform.Position = _cameraPosition;
                     pew.Rigidbody.isStatic = false;
-                    Graphics.Utils.CreateObject(pew, new Graphics.Mesh(Graphics.Primitives.Cube()));
+                    Material mat = new Material(_shader);
+
+                    Random r = new Random();
+                    mat.TintColor = new Vector3((float)r.NextDouble(), (float)r.NextDouble(), (float)r.NextDouble());
+                    Graphics.Utils.CreateObject(pew, new Graphics.Mesh(Graphics.Primitives.Cube()), mat);
                     pew.Awake();
-                    System.Numerics.Vector3 force = new System.Numerics.Vector3(70f, 0f, 0f);
-                    pew.Rigidbody.Description.Velocity = new BodyVelocity(force);
+                    BodyReference body = Physics.Simulation.Bodies.GetBodyReference(pew.DynamicHandle);
+                    body.ApplyLinearImpulse((System.Numerics.Vector3)(Utils.Math.ForwardFromYawPitch(-BepuUtilities.MathHelper.ToRadians(_yaw + -90f), BepuUtilities.MathHelper.ToRadians(_pitch)) * 5f));
                 }
 
                 _speed += mouse.ScrollDelta.Y;
@@ -319,10 +331,6 @@ namespace Limeko
                 GL.Enable(EnableCap.DepthTest);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                //  Shader
-                _shader.Use();
-                _shader.SetVector3("uLightDir", new Vector3(-0.3f, -1f, -0.2f));
-
                 Matrix4 model =
                     Matrix4.CreateRotationY(_time) *
                     Matrix4.CreateRotationX(_time * 0.5f);
@@ -345,17 +353,29 @@ namespace Limeko
                     Size.X / (float)Size.Y,
                     0.01f,
                     100f);
-
-                _shader.SetMatrix4("uModel", model);
-                _shader.SetMatrix4("uView", view);
-                _shader.SetMatrix4("uProjection", projection);
                 foreach(var obj in RenderingCore.GetRegistered())
                 {
-                    _shader.SetColor("uRandomColor", obj.Color);
-                    _shader.SetMatrix4("uModel", obj.GetModelMatrix());
-                    obj.Mesh.Draw(_showDebug ? PrimitiveType.Lines : PrimitiveType.Triangles);
-                }
+                    obj.Material.Bind();
 
+                    var shader = obj.Material.Shader;
+
+                    shader.SetInt("uLightCount", 1);
+
+                    shader.SetVector3("uLightDirs[0]",
+                        Vector3.Normalize(new Vector3(-0.3f, -1f, -0.2f)));
+
+                    shader.SetVector3("uLightColors[0]", Vector3.One);
+                    shader.SetFloat("uLightIntensity[0]", 1.0f);
+
+                    // optional but important
+                    shader.SetFloat("uAmbient", 0.2f);
+
+                    obj.Material.Shader.SetMatrix4("uModel", obj.GetModelMatrix());
+                    obj.Material.Shader.SetMatrix4("uView", view);
+                    obj.Material.Shader.SetMatrix4("uProjection", projection);
+
+                    obj.Mesh.Draw(Limeko.Core.WindowInstance._showDebug ? PrimitiveType.Lines : PrimitiveType.Triangles);
+                }
 
 
                 GL.Disable(EnableCap.DepthTest);
@@ -439,8 +459,8 @@ namespace Limeko
                 try
                 {
                     _shader = new Shader(
-                    Path.Combine(Utils.Paths.EngineData, "Shaders/basic.vert"),
-                    Path.Combine(Utils.Paths.EngineData, "Shaders/basic.frag"));
+                    Path.Combine(Utils.Paths.EngineData, "Shaders/Lit.vert"),
+                    Path.Combine(Utils.Paths.EngineData, "Shaders/Lit.frag"));
                 }
                 catch(Exception ex) { Console.WriteLine($"Shader Compilation error: {ex.Message}"); };
 
@@ -454,10 +474,6 @@ namespace Limeko
 
                 // clear uniform cache
                 Graphics.Utils.ClearUniformCache();
-
-                // init them, even when we aren't going to use them.
-                _shader.Use();
-                _uiShader.Use();
             }
         }
 
@@ -500,6 +516,17 @@ namespace Limeko
                 if(input.Y > r) r = input.Y;
                 if(input.Z > r) r = input.Z;
                 return r;
+            }
+
+            public static Vector3 ForwardFromYawPitch(float yaw, float pitch)
+            {
+                Vector3 forward;
+
+                forward.X = MathF.Cos(pitch) * MathF.Sin(yaw);
+                forward.Y = MathF.Sin(pitch);
+                forward.Z = MathF.Cos(pitch) * MathF.Cos(yaw);
+
+                return Vector3.Normalize(forward);
             }
 
             public static System.Numerics.Vector3 Vector3Operation(System.Numerics.Vector3 a, System.Numerics.Vector3 b, MathOperation operation)
@@ -618,33 +645,44 @@ namespace Limeko
                 return vertices.ToArray();
             }
 
-            private static void AddVertex(
+            static void AddVertex(
                 string token,
                 List<Vector3> positions,
                 List<Vector3> normals,
                 List<float> vertices)
             {
+                // OBJ formats:
+                // v
+                // v/vt
+                // v//vn
+                // v/vt/vn
+
                 var indices = token.Split('/');
 
-                int vIndex = int.Parse(indices[0]) - 1;
-                Vector3 pos = positions[vIndex];
+                int posIndex = int.Parse(indices[0]) - 1;
 
-                Vector3 norm = Vector3.UnitY;
-
+                int normIndex = -1;
                 if (indices.Length >= 3 && !string.IsNullOrEmpty(indices[2]))
-                {
-                    int nIndex = int.Parse(indices[2]) - 1;
-                    if (nIndex >= 0 && nIndex < normals.Count)
-                        norm = normals[nIndex];
-                }
+                    normIndex = int.Parse(indices[2]) - 1;
 
+                Vector3 pos = positions[posIndex];
+                Vector3 norm = normIndex >= 0
+                    ? normals[normIndex]
+                    : Vector3.UnitY; // safe fallback
+
+                // ---- POSITION ----
                 vertices.Add(pos.X);
                 vertices.Add(pos.Y);
                 vertices.Add(pos.Z);
 
+                // ---- NORMAL ----
                 vertices.Add(norm.X);
                 vertices.Add(norm.Y);
                 vertices.Add(norm.Z);
+
+                // ---- TEMP UVs (IMPORTANT FIX) ----
+                vertices.Add(0f);
+                vertices.Add(0f);
             }
         }
     }
