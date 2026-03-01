@@ -14,7 +14,7 @@ Limeko runs on *one* Render Pipeline. RPPs are like pre-made configurations that
 Note: Limeko does not have multiple Render Pipelines. Instead, it runs on one very flexible Render Pipeline with lots of toggles and settings.
 
 # Physics
-Limeko's native physics engine is [Bepu](https://github.com/bepu/bepuphysics2). Bepu is a lightweight, open-source Physics library, like Nvidia PhysX.
+Limeko's native physics engine is [Bepu](https://github.com/bepu/bepuphysics2). Bepu is a lightweight, open-source Physics library, like Nvidia's PhysX.
 
 Bepu was etched into Limeko from as early as the first week of development, meaning it's systems revolve around it, but don't depend on it.
 You'll get the best experience Limeko can offer.
