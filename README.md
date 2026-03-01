@@ -7,7 +7,7 @@ A flexible, Open-Source Game Engine made to combine all of the best features int
 What are Render-Pipe Presets (RPPs)?
 
 Limeko runs on *one* Render Pipeline. RPPs are like pre-made configurations that let you decide early on what you want to prioritize.
-- Viola: Favors fidelity. Volumetric Fog, SSGR, SSAO, and high-definition baked lighting settings the second you create the project.
+- Viola: Favors fidelity. Volumetric Fog, SSR, SSAO, and high-definition baked lighting settings the second you create the project.
 - Citron: A nice middle-ground. Optimized to run okay on low-end hardware, and run with plenty of headroom on modern computers.
 - Lime - The highest performance preset. Made for standalone platforms like Quest, or mobile devices such as tablets or smart-phones.
 
