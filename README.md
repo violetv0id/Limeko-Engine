@@ -1,7 +1,8 @@
 # Limeko Engine
 A flexible, Open-Source Game Engine made to combine all of the best features into one lightweight stack. Runs Natively on [OpenGL](https://www.opengl.org/), with planned support for [Vulkan](https://www.vulkan.org/).
 
-### Note: Limeko is very early in development, and is not a functional "Game Engine". Core framework is still being made and polished.
+> [!IMPORTANT]
+> Limeko is very early in development, and is not a functional "Game Engine". Core framework is still being made and polished.
 
 # Render-Pipe Presets
 What are Render-Pipe Presets (RPPs)?
@@ -11,7 +12,8 @@ Limeko runs on *one* Render Pipeline. RPPs are like pre-made configurations that
 - Citron: A nice middle-ground. Optimized to run okay on low-end hardware, and run with plenty of headroom on modern computers.
 - Lime - The highest performance preset. Made for standalone platforms like Quest, or mobile devices such as tablets or smart-phones.
 
-Note: Limeko does not have multiple Render Pipelines. Instead, it runs on one very flexible Render Pipeline with lots of toggles and settings.
+> [!NOTE]
+> Limeko does not have multiple Render Pipelines. Instead, it runs on one very flexible Render Pipeline with lots of toggles and settings.
 
 # Physics
 Limeko's native physics engine is [Bepu](https://github.com/bepu/bepuphysics2). Bepu is a lightweight, open-source Physics library, like Nvidia's PhysX.
@@ -20,6 +22,12 @@ Bepu was etched into Limeko from as early as the first week of development, mean
 You'll get the best experience Limeko can offer.
 
 # Roadmap
+(<i>If you'd like to suggest features, send them [here](https://github.com/violetv0id/Limeko-Engine/issues)!</i>)
+
+### In Progress
+- Editor UI
+- Render Pipeline Framework
+- Material Framework
 
 ### Near Future
 - Hotloading (Models, Scripts)
