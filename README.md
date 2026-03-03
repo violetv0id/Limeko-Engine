@@ -1,3 +1,6 @@
+> [!CAUTION]
+> Limeko is currently undergoing a **recode**. Previously working features (Basic rendering, Physics) are either no longer working, no longer implemented, or are unpolished.
+
 # Limeko Engine
 A flexible, Open-Source Game Engine made to combine all of the best features into one lightweight stack. Runs Natively on [OpenGL](https://www.opengl.org/), with planned support for [Vulkan](https://www.vulkan.org/).
 
