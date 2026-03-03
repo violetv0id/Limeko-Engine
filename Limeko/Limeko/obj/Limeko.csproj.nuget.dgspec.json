@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\Limeko.csproj": {}
+    "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Limeko.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\Limeko.csproj": {
+    "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Limeko.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\Limeko.csproj",
+        "projectUniqueName": "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Limeko.csproj",
         "projectName": "Limeko",
-        "projectPath": "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\Limeko.csproj",
+        "projectPath": "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Limeko.csproj",
         "packagesPath": "C:\\Users\\Violet\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\obj\\",
+        "outputPath": "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -49,6 +49,28 @@
       "frameworks": {
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
+          "dependencies": {
+            "BepuPhysics": {
+              "target": "Package",
+              "version": "[2.4.0, )"
+            },
+            "BepuUtilities": {
+              "target": "Package",
+              "version": "[2.4.0, )"
+            },
+            "OpenTK": {
+              "target": "Package",
+              "version": "[4.9.4, )"
+            },
+            "OpenTK.Core": {
+              "target": "Package",
+              "version": "[4.9.4, )"
+            },
+            "OpenTK.Mathematics": {
+              "target": "Package",
+              "version": "[4.9.4, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

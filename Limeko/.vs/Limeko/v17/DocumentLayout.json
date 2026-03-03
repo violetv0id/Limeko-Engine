@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Violet\\source\\repos\\Limeko\\",
+  "WorkspaceRootPath": "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B3766B9F-984D-4255-AB5D-03453C537E38}|Limeko\\Limeko.csproj|c:\\users\\violet\\source\\repos\\limeko\\limeko\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B3766B9F-984D-4255-AB5D-03453C537E38}|Limeko\\Limeko.csproj|c:\\users\\violet\\documents\\github\\limeko-engine\\limeko\\limeko\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B3766B9F-984D-4255-AB5D-03453C537E38}|Limeko\\Limeko.csproj|solutionrelative:limeko\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B3766B9F-984D-4255-AB5D-03453C537E38}|Limeko\\Limeko.csproj|c:\\users\\violet\\source\\repos\\limeko\\limeko\\limeko.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "AbsoluteMoniker": "D:0:0:{B3766B9F-984D-4255-AB5D-03453C537E38}|Limeko\\Limeko.csproj|c:\\users\\violet\\documents\\github\\limeko-engine\\limeko\\limeko\\limeko.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
       "RelativeMoniker": "D:0:0:{B3766B9F-984D-4255-AB5D-03453C537E38}|Limeko\\Limeko.csproj|solutionrelative:limeko\\limeko.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
     }
   ],
@@ -24,9 +24,9 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Limeko",
-              "DocumentMoniker": "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\Limeko.csproj",
+              "DocumentMoniker": "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Limeko.csproj",
               "RelativeDocumentMoniker": "Limeko\\Limeko.csproj",
-              "ToolTip": "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\Limeko.csproj",
+              "ToolTip": "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Limeko.csproj",
               "RelativeToolTip": "Limeko\\Limeko.csproj",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2026-03-03T06:33:17.813Z",
@@ -36,11 +36,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\Program.cs",
+              "DocumentMoniker": "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Program.cs",
               "RelativeDocumentMoniker": "Limeko\\Program.cs",
-              "ToolTip": "C:\\Users\\Violet\\source\\repos\\Limeko\\Limeko\\Program.cs",
+              "ToolTip": "C:\\Users\\Violet\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Program.cs",
               "RelativeToolTip": "Limeko\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAHIAAAAAAAAAAADgv7QAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-03T04:26:05.652Z",
               "EditorCaption": ""
