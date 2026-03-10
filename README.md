@@ -4,7 +4,7 @@
 # Limeko Engine
 A flexible, Open-Source Game Engine made to combine all of the best features into one lightweight stack. Runs Natively on [OpenGL](https://www.opengl.org/), with planned support for [Vulkan](https://www.vulkan.org/).
 
-If you'd like to learn more, visit the [Official Website](https://violetv0id.github.io/lunark.github.io/Limeko.html)!
+If you'd like to learn more, visit the [Official Website](https://violetv0id.github.io/lunark.github.io/limeko.html)!
 
 > [!IMPORTANT]
 > Limeko is very early in development, and is not a functional "Game Engine". Core framework is still being made and polished.
