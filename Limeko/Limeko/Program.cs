@@ -188,6 +188,49 @@ namespace Limeko
     public class Rendering
     {
         // not implemented
+
+        public class Renderer
+        {
+            public Material material;
+            public Mesh mesh;
+        }
+
+        /// <summary>
+        /// Holds a Shader, and displays instanced variables for it.
+        /// (Per-Material same-shader control)
+        /// </summary>
+        public class Material
+        {
+            public Shader shader;
+        }
+
+        /// <summary>
+        /// Holds data about how things should be rendered, shaded, textured, and colored.
+        /// </summary>
+        public class Shader
+        {
+
+        }
+    }
+
+    public class EntitySystem
+    {
+        /// <summary>
+        /// The base class for every object.
+        /// Serves as a 'GameObject' component.
+        /// </summary>
+        public class Entity
+        {
+            public string name;
+            public Transform transform;
+        }
+
+        public class Transform
+        {
+            public Vector3 position;
+            public Quaternion rotation;
+            public Vector3 scale;
+        }
     }
 
     public class Physics
