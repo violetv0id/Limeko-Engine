@@ -103,7 +103,7 @@ namespace Limeko
                 base .OnUpdateFrame(e);
                 // Runs every frame.
 
-                // Input.Update();
+                Input.Update(KeyboardState);
             }
 
             protected override void OnResize(ResizeEventArgs e)
@@ -192,6 +192,33 @@ namespace Limeko
     public class Input
     {
         // not implemented
+
+        // supports multiple keyboards, although the current input method-
+        // -does not support multiple keyboards.
+        // Maybe switch to an input library?
+        public static Dictionary<Keyboard, KeyboardState> keyboards = new();
+
+        /// <summary>
+        /// An internal method for updating inputs. Do not call this directly!
+        /// </summary>
+        public static void Update(KeyboardState keyboard)
+        {
+            
+        }
+
+        // Inefficient but functional
+        public enum Key
+        {
+            Q,W,E,R,T,Y,U,I,O,P,A,S,D,F,G,H,J,K,L,Z,X,C,V,B,N,M,ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE,ESCAPE,COMMA,PERIOD,COLON,QUOTE
+        }
+
+        public class Keyboard
+        {
+            public virtual void OnKeyDown(Key key)
+            {
+
+            }
+        }
     }
 
     public class Rendering
@@ -258,6 +285,9 @@ namespace Limeko
 
     public class Physics
     {
+        /// <summary>
+        /// The amount of gravity objects will experience in M/s.
+        /// </summary>
         public static Vector3 gravity = new Vector3(0f, 9.80665f, 0f);
         // not fully implemented
 
@@ -292,6 +322,43 @@ namespace Limeko
             public AudioCodec codec { get; private set; }
             public byte[] audioData;
             */
+        }
+    }
+
+    public class Editor
+    {
+        public static bool isProjectOpen;
+        // the currently open project.
+        public static string activeProjectPath = "";
+
+        // the default location new projects are created at.
+        public static string defaultProjectPath = "";
+
+        /// <summary>
+        /// Initialiezes core User and Editor data.
+        /// </summary>
+        public static void EditorInit()
+        {
+
+        }
+
+        /// <summary>
+        /// Loads an existing Project, given one is not open.
+        /// Internal Method--Don't call directly!
+        /// </summary>
+        /// <param name="path"></param>
+        public static void LoadProject(string path)
+        {
+
+        }
+
+        /// <summary>
+        /// Unloads the currently open Project, given one is open.
+        /// Internal Method--Don't call directly!
+        /// </summary>
+        public static void UnloadProject()
+        {
+
         }
     }
 }

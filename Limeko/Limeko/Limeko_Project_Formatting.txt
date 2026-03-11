@@ -1,0 +1,13 @@
+Limeko Project Formatting
+(Concept)
+
+
+Creation Flow:
+Create(Button) ->
+  - Project Name
+  - Project Developer
+  - Project Publisher (Optional)
+  - RP-Preset (Default: Citron)
+  - Create (Button // Confirm)
+
+Internal system creates Project folders by 
