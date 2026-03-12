@@ -51,7 +51,8 @@ namespace Limeko
                 ClientSize = new Vector2i(1280, 720),
                 WindowState = WindowState.Normal,
                 Vsync = VSyncMode.On,
-                Title = "Limeko"
+                Title = "Limeko",
+                StartVisible = false
             };
 
 
@@ -67,6 +68,8 @@ namespace Limeko
                 // Do *not* Initialize Physics--that's for runtime.
 
                 // Slowly learning from my mistakes.
+
+                Editor.EditorInit();
 
 
                 Console.WriteLine("<--> Starting Editor (Internal) <-->");
@@ -85,10 +88,12 @@ namespace Limeko
 
 
                 Console.Clear();
+                this.IsVisible = true;
+
                 // Utils.Misc.PrintLimeko(true);
                 // Utils.Misc.PrintLicenseDisclaimer();
 
-                Console.WriteLine("LIMEKO!!!!!!!!!!");
+                Console.WriteLine("#= Dev-Stats =#\n");
                 Console.WriteLine("OpenGL: Running & Configured");
             }
 
@@ -226,12 +231,15 @@ namespace Limeko
     {
         // Logic
 
+        /// <summary>
+        /// Configures OpenGL to not render backfaces and to blend.
+        /// </summary>
         public static void ConfigureOpenGL()
         {
-            GL.Enable(EnableCap.CullFace);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.FrontFace(FrontFaceDirection.Ccw);
+            GL.Enable(EnableCap.CullFace); // don't cull faces we can't see
+            GL.Enable(EnableCap.Blend); // dunno?
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha); // some sort of bleding for transparency(?)
+            GL.FrontFace(FrontFaceDirection.Ccw); // counter-clockwise faces are ignored(?)
         }
 
 
