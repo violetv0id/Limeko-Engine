@@ -64,3 +64,17 @@ C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\obj\Debug\
 C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\obj\Debug\net8.0-windows\Limeko.pdb
 C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\obj\Debug\net8.0-windows\Limeko.genruntimeconfig.cache
 C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\obj\Debug\net8.0-windows\ref\Limeko.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.Base.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.Controls.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.DesignerSupport.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.Dialogs.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.Markup.Xaml.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.Markup.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.Metal.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.MicroCom.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.OpenGL.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.Vulkan.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\Avalonia.Remote.Protocol.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\bin\Debug\net8.0-windows\MicroCom.Runtime.dll
+C:\Users\Nicole\OneDrive\Documents\GitHub\Limeko-Engine\Limeko\Limeko\obj\Debug\net8.0-windows\Avalonia\Resources.Inputs.cache

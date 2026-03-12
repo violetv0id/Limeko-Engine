@@ -1,4 +1,5 @@
-﻿using BepuPhysics;
+﻿using Avalonia;
+using BepuPhysics;
 using BepuPhysics.Collidables;
 using OpenTK.Core;
 using OpenTK.Graphics.OpenGL4;
@@ -7,6 +8,8 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.Versioning;
 
 namespace Limeko
@@ -20,6 +23,8 @@ namespace Limeko
 
         public static void Main()
         {
+            // Editor.SplashScreen.Show();
+
             Console.Title = "Limeko Console";
             WindowInstance = new Window();
             WindowInstance.Run();
@@ -31,11 +36,6 @@ namespace Limeko
             float _fixedDeltaTime;
 
             public static Vector2 WindowSize;
-
-            // mouse control // eventually move to a separate Input class.
-            Vector2 _lastMouse;
-            bool _firstMove = true;
-            float _sensitivity = 0.15f;
 
             public static int targetFrameRate = 90;
 
@@ -88,13 +88,22 @@ namespace Limeko
 
 
                 Console.Clear();
+
+                Editor.Utils.Misc.PrintLimeko(true);
+                Editor.Utils.Misc.PrintLicenseDisclaimer();
+
+                Console.WriteLine("\n\n#= Dev-Stats =#\n");
+
+                Console.WriteLine($"> Project Path: {Editor.Utils.GetActiveProjectPath()}");
+                Console.WriteLine($"> Default Project Path: {Editor.Utils.GetDefaultProjectPath()}\n");
+
+                Console.WriteLine("> OpenGL: Running & Configured");
+                Console.WriteLine("> Bepu: Not Implemented");
+                Console.WriteLine("> Editor UI: Not Implemented");
+                Console.WriteLine("> Render Pipeline: Not Implemented");
+                Console.WriteLine("> Audio System: Not Implemented");
+
                 this.IsVisible = true;
-
-                // Utils.Misc.PrintLimeko(true);
-                // Utils.Misc.PrintLicenseDisclaimer();
-
-                Console.WriteLine("#= Dev-Stats =#\n");
-                Console.WriteLine("OpenGL: Running & Configured");
             }
 
             protected override void OnUnload()
@@ -202,6 +211,13 @@ namespace Limeko
         // supports multiple keyboards, although the current input method-
         // -does not support multiple keyboards.
         // Maybe switch to an input library?
+
+
+        // mouse control // eventually move to a separate Input class.
+        Vector2 _lastMouse;
+        bool _firstMove = true;
+        float _sensitivity = 0.15f;
+
         public static Dictionary<Keyboard, KeyboardState> keyboards = new();
 
         /// <summary>
@@ -257,6 +273,12 @@ namespace Limeko
         /// </summary>
         public class Material
         {
+            // creating a new material defaults to Lit.
+            public Material()
+            {
+                // shader = Renderer.DefaultLit();
+            }
+
             public Shader shader;
         }
 
@@ -373,6 +395,66 @@ namespace Limeko
         public static void UnloadProject()
         {
 
+        }
+
+        public static class SplashScreen
+        {
+            public static void Show()
+            {
+                // No Logic
+            }
+        }
+
+        public static class Utils
+        {
+            public static string GetActiveProjectPath()
+            {
+                string? path = Editor.isProjectOpen && !string.IsNullOrEmpty(Editor.activeProjectPath) ? Editor.activeProjectPath : null;
+                return path;
+            }
+
+            public static string GetDefaultProjectPath()
+            {
+                string? path = !string.IsNullOrEmpty(Editor.defaultProjectPath) ? Editor.defaultProjectPath : null;
+                return path;
+            }
+
+            public static class Misc
+            {
+                public static void PrintLimeko(bool spacer)
+                {
+                    if (spacer) Console.WriteLine("");
+                    Console.WriteLine("                                                           .-'''-.     ");
+                    Console.WriteLine(".---.                                                     '   _    \\   ");
+                    Console.WriteLine("|   |.--. __  __   ___         __.....__          .     /   /` '.   \\  ");
+                    Console.WriteLine("|   ||__||  |/  `.'   `.   .-''         '.      .'|    .   |     \\  '  ");
+                    Console.WriteLine("|   |.--.|   .-.  .-.   ' /     .-''\"'-.  `.  .'  |    |   '      |  ' ");
+                    Console.WriteLine("|   ||  ||  |  |  |  |  |/     /________\\   \\<    |    \\    \\     / /  ");
+                    Console.WriteLine("|   ||  ||  |  |  |  |  ||                  | |   | ____`.   ` ..' /   ");
+                    Console.WriteLine("|   ||  ||  |  |  |  |  |\\    .-------------' |   | \\ .'   '-...-'`    ");
+                    Console.WriteLine("|   ||  ||  |  |  |  |  | \\    '-.____...---. |   |/  .                ");
+                    Console.WriteLine("|   ||__||__|  |__|  |__|  `.             .'  |    /\\  \\               ");
+                    Console.WriteLine("'---'                        `''-...... -'    |   |  \\  \\              ");
+                    Console.WriteLine("                                              '    \\  \\  \\             ");
+                    Console.WriteLine("                                             '------'  '---'           ");
+                    if (spacer) Console.WriteLine("");
+                }
+
+                public static void PrintLicenseDisclaimer()
+                {
+                    Console.WriteLine("Limeko-Engine  Copyright (C) 2026  lunark");
+                    Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY.");
+                    Console.WriteLine("This is free software, and you are welcome to redistribute it");
+                    Console.WriteLine("under certain conditions. Press F9 to learn more.");
+                }
+
+                public static void OpenWebpage(string url)
+                {
+                    ProcessStartInfo info = new ProcessStartInfo
+                    { FileName = url, UseShellExecute = true };
+                    Process.Start(info);
+                }
+            }
         }
     }
 }

@@ -1,11 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "BFnzb+R4Npc=",
+  "dgSpecHash": "ksUU7HiYNbY=",
   "success": true,
   "projectFilePath": "C:\\Users\\Nicole\\OneDrive\\Documents\\GitHub\\Limeko-Engine\\Limeko\\Limeko\\Limeko.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Nicole\\.nuget\\packages\\avalonia\\11.3.12\\avalonia.11.3.12.nupkg.sha512",
+    "C:\\Users\\Nicole\\.nuget\\packages\\avalonia.buildservices\\11.3.2\\avalonia.buildservices.11.3.2.nupkg.sha512",
+    "C:\\Users\\Nicole\\.nuget\\packages\\avalonia.remote.protocol\\11.3.12\\avalonia.remote.protocol.11.3.12.nupkg.sha512",
     "C:\\Users\\Nicole\\.nuget\\packages\\bepuphysics\\2.4.0\\bepuphysics.2.4.0.nupkg.sha512",
     "C:\\Users\\Nicole\\.nuget\\packages\\bepuutilities\\2.4.0\\bepuutilities.2.4.0.nupkg.sha512",
+    "C:\\Users\\Nicole\\.nuget\\packages\\microcom.runtime\\0.11.0\\microcom.runtime.0.11.0.nupkg.sha512",
     "C:\\Users\\Nicole\\.nuget\\packages\\opentk\\4.9.4\\opentk.4.9.4.nupkg.sha512",
     "C:\\Users\\Nicole\\.nuget\\packages\\opentk.audio.openal\\4.9.4\\opentk.audio.openal.4.9.4.nupkg.sha512",
     "C:\\Users\\Nicole\\.nuget\\packages\\opentk.compute\\4.9.4\\opentk.compute.4.9.4.nupkg.sha512",
