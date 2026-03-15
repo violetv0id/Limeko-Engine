@@ -5,7 +5,7 @@
 # Limeko Engine
 A flexible, Open-Source Game Engine made to combine all of the best features into one lightweight stack. Runs Natively on [OpenGL](https://www.opengl.org/), with planned support for [Vulkan](https://www.vulkan.org/).
 
-If you'd like to learn more, visit the [Official Website](https://violetv0id.github.io/lunark.github.io/limeko.html)!
+If you'd like to learn more, visit the [Official Website](https://violetv0id.github.io/lunark/limeko.html)!
 
 > [!IMPORTANT]
 > Limeko is very early in development, and is not a functional "Game Engine". Core framework is still being made and polished.
@@ -58,7 +58,7 @@ You'll get the best experience Limeko can offer.
 ## Links (In Order)
 - OpenGL - https://www.opengl.org/
 - Vulkan - https://www.vulkan.org/
-- Limeko Website - https://violetv0id.github.io/lunark.github.io/Limeko.html
+- Limeko Website - https://violetv0id.github.io/lunark/Limeko.html
 - Microsoft DotNet 8.0 - https://dotnet.microsoft.com/en-us/download/dotnet/8.0
 - Bepu Physics V2 - https://github.com/bepu/bepuphysics2
 - Limeko Feature Request / Issues - https://github.com/violetv0id/Limeko-Engine/issues
