@@ -35,7 +35,7 @@ Bepu was etched into Limeko from as early as the first week of development, mean
 You'll get the best experience Limeko can offer.
 
 # Roadmap
-(<i>If you'd like to suggest features, send them [here](https://github.com/violetv0id/Limeko-Engine/issues)!</i>)
+(<i>If you'd like to suggest features, send them [here](https://github.com/ariworks-entertainment/Limeko-Engine/issues)!</i>)
 
 ### In Progress
 - Render Pipeline Framework
@@ -61,4 +61,4 @@ You'll get the best experience Limeko can offer.
 - Limeko Website - https://violetv0id.github.io/lunark/Limeko.html
 - Microsoft DotNet 8.0 - https://dotnet.microsoft.com/en-us/download/dotnet/8.0
 - Bepu Physics V2 - https://github.com/bepu/bepuphysics2
-- Limeko Feature Request / Issues - https://github.com/violetv0id/Limeko-Engine/issues
+- Limeko Feature Request / Issues - https://github.com/ariworks-entertainment/Limeko-Engine/issues
